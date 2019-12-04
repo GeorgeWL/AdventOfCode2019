@@ -1,0 +1,23 @@
+{
+	"name": "adventofcode-2019-george",
+	"version": "1.0.0",
+	"description": "code for https://adventofcode.com",
+	"main": "index.js",
+	"scripts": {
+		"test": "npx jest --watchAll",
+		"start": "npx nodemon"
+	},
+	"keywords": [
+		"code kata",
+		"advent",
+		"adventofcode",
+		"advent of code",
+		"adventofcode2019",
+		"advent of code 2019"
+	],
+	"author": "GeorgeWL",
+	"license": "ISC",
+	"dependencies": {
+		"jest": "^24.9.0"
+	}
+}
