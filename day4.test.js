@@ -7,12 +7,12 @@
  * Only ever Increase or stay the same
  */
 
-const TEST_SIMPLE = '111111';
-const TEST_SIMPLE_ASC = '112345';
-const TEST_FAILURE_DECREASE = '223450';
-const TEST_FAILURE_DECREASE_DOUBLE = '111110';
-const TEST_FAILURE_NO_DOUBLE = '123456';
-const TEST_FAILURE_LENGTH = '12345';
+const CASE_SIMPLE = '111111';
+const CASE_SIMPLE_ASC = '112345';
+const CASE_FAILURE_DECREASE = '223450';
+const CASE_FAILURE_DECREASE_DOUBLE = '111110';
+const CASE_FAILURE_NO_DOUBLE = '123456';
+const CASE_FAILURE_LENGTH = '12345';
 
 async function searchPasswords(input) {
 	let containsPass = false;
@@ -36,22 +36,29 @@ async function checkPasswordRules(input) {
 	let prevDigit;
 	let currentDigit;
 	const matches = new Set();
-	let hasDesc = false;
-	const prevDigits = [];
 	return new Promise((resolve, reject) => {
+		const isAscending = checkAscending(input);
+		!isAscending && resolve();
 		input.split('').forEach((digit, index) => {
-			currentIndex = index + 1;
+			currentIndex = index++;
 			currentDigit = digit;
-			currentDigit === prevDigit && matches.add(`${prevDigit}${currentDigit}`);
+			checkMatchPair(prevDigit, currentDigit) &&
+				matches.add(`${prevDigit}${currentDigit}`);
 			prevDigit = digit;
-			prevDigits.push(digit);
-			hasDesc = prevDigits.some(int => digit < int);
-			hasDesc === true && matches.clear();
+			matches.clear();
 			if (currentIndex === input.length) {
 				resolve(matches);
 			}
 		});
 	});
+}
+
+function checkMatchPair(prevDigit, currentDigit) {
+	return currentDigit === prevDigit;
+}
+
+function checkAscending(input) {
+	return false;
 }
 
 async function passwordsInRange(start, end) {
@@ -64,36 +71,50 @@ async function passwordsInRange(start, end) {
 }
 jest.setTimeout(120000);
 
-describe('simple test', () => {
-	test('should fail if length !==6', async () => {
-		const res = await searchPasswords(TEST_FAILURE_LENGTH);
-		expect(res.reason).toBe('Expect Input Length of 6');
-		expect(res.containsPass).toBe(false);
+describe('simple it', () => {
+	describe.only('is double its', () => {
+		it('should return false double', () => {
+			const res = checkMatchPair(1, 2);
+			expect(res).toBe(false);
+		});
+
+		it('should return true double', () => {
+			const res = checkMatchPair(1, 1);
+			expect(res).toBe(true);
+		});
 	});
-	test('should fail if later descend', async () => {
-		const res = await searchPasswords(TEST_FAILURE_DECREASE);
-		expect(res.reason).toBe('Does not contain pass');
-		expect(res.containsPass).toBe(false);
+	describe('fail tests searchPasswords', () => {
+		it('should fail if length !==6', async () => {
+			const res = await searchPasswords(CASE_FAILURE_LENGTH);
+			expect(res.reason).toBe('Expect Input Length of 6');
+			expect(res.containsPass).toBe(false);
+		});
+		it('should fail if later descend', async () => {
+			const res = await searchPasswords(CASE_FAILURE_DECREASE);
+			expect(res.reason).toBe('Does not contain pass');
+			expect(res.containsPass).toBe(false);
+		});
+		it('should fail if later descend', async () => {
+			const res = await searchPasswords(CASE_FAILURE_DECREASE_DOUBLE);
+			expect(res.reason).toBe('Does not contain pass');
+			expect(res.containsPass).toBe(false);
+		});
+		it('should fail if no double', async () => {
+			const res = await searchPasswords(CASE_FAILURE_NO_DOUBLE);
+			expect(res.reason).toBe('Does not contain pass');
+			expect(res.containsPass).toBe(false);
+		});
 	});
-	test('should fail if later descend', async () => {
-		const res = await searchPasswords(TEST_FAILURE_DECREASE_DOUBLE);
-		expect(res.reason).toBe('Does not contain pass');
-		expect(res.containsPass).toBe(false);
-	});
-	test('should fail if no double', async () => {
-		const res = await searchPasswords(TEST_FAILURE_NO_DOUBLE);
-		expect(res.reason).toBe('Does not contain pass');
-		expect(res.containsPass).toBe(false);
-	});
-	test('should pass double - all same digit', async () => {
-		const res = await searchPasswords(TEST_SIMPLE);
+
+	it('should pass double - all same digit', async () => {
+		const res = await searchPasswords(CASE_SIMPLE);
 		expect(res.containsPass).toBe(true);
 	});
-	test('should pass double - one pair', async () => {
-		const res = await searchPasswords(TEST_SIMPLE_ASC);
+	it('should pass double - one pair', async () => {
+		const res = await searchPasswords(CASE_SIMPLE_ASC);
 		expect(res.containsPass).toBe(true);
 	});
-	test('get passwords in range', async () => {
+	it('get passwords in range', async () => {
 		const res = await passwordsInRange(111110, 111121);
 		expect(res).toHaveLength(12);
 		expect(res.filter(item => item.containsPass)).toHaveLength(9);
