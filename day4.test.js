@@ -57,10 +57,7 @@ function checkNotDescending(input) {
 }
 
 function passwordsInRange(start, end) {
-	const passArray = Array(end - start + 1)
-		.fill()
-		.map((_, index) => start + index)
-		.fill(start, end);
+	const passArray = [...new Array(end - start).keys()].map(key => key + start);
 	const validPasswords = [];
 	passArray.forEach(pass => {
 		if (passwordMeetsCriteria(pass)) {
@@ -75,89 +72,82 @@ function passwordsInRange(start, end) {
 	return validPasswords;
 }
 
-jest.setTimeout(120000);
-
-describe('simple it', () => {
-	describe('is double its', () => {
-		it('should return false double', () => {
-			const res = checkMatchPair(1, 2);
-			expect(res).toBe(false);
-		});
-		it('should return false double', () => {
-			const res = checkMatchPair(3, 2);
-			expect(res).toBe(false);
-		});
-		it('should return true double', () => {
-			const res = checkMatchPair(1, 1);
-			expect(res).toBe(true);
-		});
+describe('is double its', () => {
+	it('should return false double', () => {
+		const res = checkMatchPair(1, 2);
+		expect(res).toBe(false);
 	});
-
-	describe('isAscendingOnly', () => {
-		it('should return true not descending - CASE_SIMPLE', () => {
-			const res = checkNotDescending(CASE_SIMPLE);
-			expect(res).toBe(true);
-		});
-		it('should return true not descending - CASE_SIMPLE_ASC', () => {
-			const res = checkNotDescending(CASE_FAILURE_LENGTH);
-			expect(res).toBe(true);
-		});
-		it('should return true not descending - CASE_SIMPLE_ASC', () => {
-			const res = checkNotDescending(CASE_FAILURE_NO_DOUBLE);
-			expect(res).toBe(true);
-		});
-		it('should return true not descending - CASE_SIMPLE_ASC', () => {
-			const res = checkNotDescending(CASE_SIMPLE_ASC);
-			expect(res).toBe(true);
-		});
-		it('should return false not descending', () => {
-			const res = checkNotDescending(CASE_FAILURE_DECREASE);
-			expect(res).toBe(false);
-		});
-		it('should return false not descending', () => {
-			const res = checkNotDescending(CASE_FAILURE_DECREASE_DOUBLE);
-			expect(res).toBe(false);
-		});
+	it('should return false double', () => {
+		const res = checkMatchPair(3, 2);
+		expect(res).toBe(false);
 	});
-
-	describe('fail tests searchPasswords', () => {
-		it('should fail if length !==6', () => {
-			const res = passwordMeetsCriteria(CASE_FAILURE_LENGTH);
-			expect(res).toBe(false);
-		});
-		it('should fail if later descend - no double', () => {
-			const res = passwordMeetsCriteria(CASE_FAILURE_DECREASE);
-			expect(res).toEqual(false);
-		});
-		it('should fail if later descend - has double', () => {
-			const res = passwordMeetsCriteria(CASE_FAILURE_DECREASE_DOUBLE);
-			expect(res).toEqual(false);
-		});
-		it('should fail if no double', () => {
-			const res = passwordMeetsCriteria(CASE_FAILURE_NO_DOUBLE);
-			expect(res).toEqual(false);
-		});
+	it('should return true double', () => {
+		const res = checkMatchPair(1, 1);
+		expect(res).toBe(true);
 	});
+});
 
-	describe('find dupes', () => {
-		it('should pass double - all same digit', () => {
-			const res = findDupesInPassword(CASE_SIMPLE);
-			expect(res).toBe(true);
-		});
-		it('should pass double - one pair', () => {
-			const res = findDupesInPassword(CASE_SIMPLE_ASC);
-			expect(res).toBe(true);
-		});
+describe('isAscendingOnly', () => {
+	it('should return true not descending - CASE_SIMPLE', () => {
+		const res = checkNotDescending(CASE_SIMPLE);
+		expect(res).toBe(true);
 	});
+	it('should return true not descending - CASE_SIMPLE_ASC', () => {
+		const res = checkNotDescending(CASE_FAILURE_LENGTH);
+		expect(res).toBe(true);
+	});
+	it('should return true not descending - CASE_SIMPLE_ASC', () => {
+		const res = checkNotDescending(CASE_FAILURE_NO_DOUBLE);
+		expect(res).toBe(true);
+	});
+	it('should return true not descending - CASE_SIMPLE_ASC', () => {
+		const res = checkNotDescending(CASE_SIMPLE_ASC);
+		expect(res).toBe(true);
+	});
+	it('should return false not descending', () => {
+		const res = checkNotDescending(CASE_FAILURE_DECREASE);
+		expect(res).toBe(false);
+	});
+	it('should return false not descending', () => {
+		const res = checkNotDescending(CASE_FAILURE_DECREASE_DOUBLE);
+		expect(res).toBe(false);
+	});
+});
 
-	describe('get in range tests', () => {
-		it('get passwords in range', () => {
-			const res = passwordsInRange(111110, 111121);
-			expect(res).toHaveLength(9);
-		});
-		it('get passwords in range', () => {
-			const res = passwordsInRange(254032, 789860);
-			expect(res).toHaveLength(936);
-		});
+describe('fail tests searchPasswords', () => {
+	it('should fail if length !==6', () => {
+		const res = passwordMeetsCriteria(CASE_FAILURE_LENGTH);
+		expect(res).toBe(false);
+	});
+	it('should fail if later descend - no double', () => {
+		const res = passwordMeetsCriteria(CASE_FAILURE_DECREASE);
+		expect(res).toEqual(false);
+	});
+	it('should fail if later descend - has double', () => {
+		const res = passwordMeetsCriteria(CASE_FAILURE_DECREASE_DOUBLE);
+		expect(res).toEqual(false);
+	});
+	it('should fail if no double', () => {
+		const res = passwordMeetsCriteria(CASE_FAILURE_NO_DOUBLE);
+		expect(res).toEqual(false);
+	});
+});
+
+describe('find dupes', () => {
+	it('should pass double - all same digit', () => {
+		const res = findDupesInPassword(CASE_SIMPLE);
+		expect(res).toBe(true);
+	});
+	it('should pass double - one pair', () => {
+		const res = findDupesInPassword(CASE_SIMPLE_ASC);
+		expect(res).toBe(true);
+	});
+});
+
+describe('get in range tests', () => {
+	it('get passwords in range', () => {
+		const res = passwordsInRange(254032, 789860);
+		console.log(res.length);
+		expect(res).toHaveLength(0);
 	});
 });
