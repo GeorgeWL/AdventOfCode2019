@@ -100,7 +100,7 @@ function passwordsInRange(start, end) {
 	return validPasswords;
 }
 
-describe('part 1 tests', () => {
+describe.skip('part 1 tests', () => {
 	describe('is double its', () => {
 		it('should return false double', () => {
 			const res = checkMatchPair(1, 2);

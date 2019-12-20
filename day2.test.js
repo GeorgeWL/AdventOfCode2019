@@ -153,19 +153,34 @@ function operate(operand, noun, verb) {
 	}
 }
 function bruteForceFindParams(output) {
-	this.noun = Math.ceil(Math.random() * 10);
-	this.verb = Math.ceil(Math.random() * 10);
-	this.res = operate('multiply', this.noun, this.verb);
-	while (this.res !== output) {
-		bruteForceFindParams(output);
-	}
-	if (this.res === output) {
-		return { noun: this.noun, verb: this.verb };
-	}
-}
-
-async function bruteForceFindOpParams(output) {
-	return new Promise((resolve, reject) => {});
+	return new Promise((resolve, reject) => {
+		let res = 0;
+		let noun = 1;
+		let verb = 1;
+		for (let indexX = 1; indexX <= 99; indexX++) {
+			noun = indexX;
+			res = operate('multiply', noun, verb);
+			if (res === output) {
+				console.log({ noun, verb });
+				resolve({ noun, verb });
+			}
+		}
+		for (let indexY = 1; indexY <= 99; indexY++) {
+			verb = indexY;
+			res = operate('multiply', noun, verb);
+			if (res === output) {
+				console.log({ noun, verb });
+				resolve({ noun, verb });
+			}
+		}
+		if (res === output) {
+			console.log({ noun, verb });
+			resolve({ noun, verb });
+		}
+		if (noun >= 100 || verb >= 100) {
+			reject(`expect noun: ${noun} and/or verb: ${verb} to be <=99`);
+		}
+	});
 }
 
 function mathOpCodes(opMap) {
@@ -249,8 +264,10 @@ describe('OpMap', () => {
 	it('should getPuzzleOutput', () => {
 		expect(mathOpCodes(opCodeMap(puzzle_input))[0]).toEqual(5434663);
 	});
-	jest.setTimeout(200000);
+	jest.setTimeout(2000000000);
 	it.only('should getPuzzleOutput 2', async () => {
-		expect(await bruteForceFindOpParams(19690720)).toEqual();
+		bruteForceFindParams(19690720).then(res => {
+			expect(res).toEqual({ noun: 1, verb: 1 });
+		});
 	});
 });
