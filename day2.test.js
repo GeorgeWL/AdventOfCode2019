@@ -144,30 +144,50 @@ function opCodeMap(opArray) {
 	return opMap;
 }
 
+function operate(operand, noun, verb) {
+	if (operand === 'add') {
+		return noun + verb;
+	}
+	if (operand === 'multiply') {
+		return noun * verb;
+	}
+}
+function bruteForceFindParams(output) {
+	this.noun = Math.ceil(Math.random() * 10);
+	this.verb = Math.ceil(Math.random() * 10);
+	this.res = operate('multiply', this.noun, this.verb);
+	while (this.res !== output) {
+		bruteForceFindParams(output);
+	}
+	if (this.res === output) {
+		return { noun: this.noun, verb: this.verb };
+	}
+}
+
+async function bruteForceFindOpParams(output) {
+	return new Promise((resolve, reject) => {});
+}
+
 function mathOpCodes(opMap) {
 	let operand;
 	let inputPosX;
 	let inputPosY;
 	let outputPos;
 	let currentOpIndex = 0;
-	// read opcodes map to find operand.
-	// set operand
-	// set value;
-	// skip 4 after set
 	opMap.forEach((_, index) => {
+		// read opcodes map to find operand.
+		// set operand
 		operand = parseOperand(opMap.get(currentOpIndex));
 		inputPosX = opMap.get(currentOpIndex + 1);
 		inputPosY = opMap.get(currentOpIndex + 2);
 		outputPos = opMap.get(currentOpIndex + 3);
 		if (operand === 'stop') {
+			// if stop opcode, terminate opcode program
 			currentOpIndex += opMap.length + 1;
-		}
-		if (operand === 'add') {
-			opMap.set(outputPos, opMap.get(inputPosX) + opMap.get(inputPosY));
-			currentOpIndex += 4;
-		}
-		if (operand === 'multiply') {
-			opMap.set(outputPos, opMap.get(inputPosX) * opMap.get(inputPosY));
+		} else {
+			// set value;
+			opMap.set(outputPos, operate(operand, inputPosX, inputPosY));
+			// skip 4 after set
 			currentOpIndex += 4;
 		}
 
@@ -228,5 +248,9 @@ describe('OpMap', () => {
 	});
 	it('should getPuzzleOutput', () => {
 		expect(mathOpCodes(opCodeMap(puzzle_input))[0]).toEqual(5434663);
+	});
+	jest.setTimeout(200000);
+	it.only('should getPuzzleOutput 2', async () => {
+		expect(await bruteForceFindOpParams(19690720)).toEqual();
 	});
 });
